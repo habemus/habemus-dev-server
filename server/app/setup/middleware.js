@@ -15,7 +15,7 @@ module.exports = function (app, options) {
       var originIsWhitelisted = (corsWhitelist.indexOf(origin) !== -1);
 
       if (!originIsWhitelisted) {
-        console.warn('request from not-whitelisted origin %s', origin, corsWhitelist);
+        // console.warn('request from not-whitelisted origin %s', origin, corsWhitelist);
       }
 
       cb(null, originIsWhitelisted);

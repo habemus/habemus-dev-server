@@ -22,13 +22,16 @@ var options = {
 // instantiate a main app
 // and use html5 dev server as a sub-router
 var app = express();
-app.use('/html5', function (req, res, next) {
-  // DEV!
-  req.projectRoot = path.join(__dirname, '../test/fixtures/html5-project');
 
-  next();
-})
-app.use('/html5', createDevServerHtml5(options));
+app.use('/html5',
+  function (req, res, next) {
+    // DEV!
+    req.projectRoot = path.join(__dirname, '../test/fixtures/html5-project');
+
+    next();
+  },
+  createDevServerHtml5(options)
+);
 
 // create http server and pass express app as callback
 var server = http.createServer(app);
