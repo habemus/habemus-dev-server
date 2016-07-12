@@ -54,42 +54,64 @@ module.exports = function (app, options) {
         return;
       }
 
-      /**
-       * Flag that is set to true once injections
-       * have been done.
-       * @type {Boolean}
-       */
-      var _injectionsDone = false;
-      var dom = aux.buildDom(contents);
+      try {
+        /**
+         * Flag that is set to true once injections
+         * have been done.
+         * @type {Boolean}
+         */
+        var _injectionsDone = false;
+        var dom = aux.buildDom(contents);
 
-      aux.walkDom(dom, function (element) {
-        if (element.type === 'tag') {
-
-          // build an id string for the element
-          var hid = req.path + '-' + element.startIndex + '-' + element.endIndex;
-
-          element.attribs['data-hid'] = hid;
-
-          // by default, add the injections in the head element
-          if (element.name === 'head') {
-            _injectHTMLStrings(element, injections);
-
-            // set injections as done
-            _injectionsDone = true;
-          }
-        }
-      });
-
-      if (!_injectionsDone) {
-        // if after parsing the DOM the injections were not made
-        // (that may happen if the document has no `head` element)
-        // force the injection and add them to the end of the document
-        dom = dom.concat(injections.map(function (injection) {
-          return aux.createElementFromString(injection);
-        }));
+      } catch (err) {
+        next(err);
+        return;
       }
 
-      res.send(aux.stringifyDom(dom));
+      try {
+
+        aux.walkDom(dom, function (element) {
+          if (element.type === 'tag') {
+
+            // build an id string for the element
+            var hid = req.path + '-' + element.startIndex + '-' + element.endIndex;
+
+            element.attribs['data-hid'] = hid;
+
+            // by default, add the injections in the head element
+            if (element.name === 'head') {
+
+              _injectHTMLStrings(element, injections);
+
+              // set injections as done
+              _injectionsDone = true;
+            }
+          }
+        });
+
+      } catch (err) {
+        next(err);
+        return;
+      }
+
+      try {
+
+        if (!_injectionsDone) {
+          // if after parsing the DOM the injections were not made
+          // (that may happen if the document has no `head` element)
+          // force the injection and add them to the end of the document
+          dom = dom.concat(injections.map(function (injection) {
+            return aux.createElementFromString(injection);
+          }));
+        }
+
+        var markedHTML = aux.stringifyDom(dom);
+      } catch (err) {
+        next(err);
+        return;
+      }
+
+      res.send(markedHTML);
     });
   });
 }
