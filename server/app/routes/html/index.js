@@ -25,6 +25,8 @@ module.exports = function (app, options) {
    */
   app.get('**/*.html', function (req, res, next) {
 
+    var filepath = req.path;
+
     /**
      * Flag that defines whether injections should be done for
      * the request. For now, checks whether the request was
@@ -41,13 +43,13 @@ module.exports = function (app, options) {
      */
     var injections = app.get('htmlInjections') || [];
 
-    req.vfs.readFile(req.path, 'utf8', function (err, contents) {
+    req.vfs.readFile(filepath, 'utf8', function (err, contents) {
 
       if (err) {
         if (err.code === 'ENOENT') {
           // ATTENTION: NotFound errors should
           // be dealt with outside dev-server-html5
-          next(new errors.NotFound(req.path));
+          next(new errors.NotFound(filepath));
         } else {
           next(err);
         }
@@ -72,11 +74,12 @@ module.exports = function (app, options) {
 
         aux.walkDom(dom, function (element) {
           if (element.type === 'tag') {
-
-            // build an id string for the element
-            var hid = req.path + '-' + element.startIndex + '-' + element.endIndex;
-
-            element.attribs['data-hid'] = hid;
+            // hf  = habemus filepath
+            // hsi = habemus start index
+            // hei = habemus end index
+            element.attribs['data-hf'] = filepath;
+            element.attribs['data-hsi'] = element.startIndex;
+            element.attribs['data-hei'] = element.endIndex;
 
             // by default, add the injections in the head element
             if (element.name === 'head') {
