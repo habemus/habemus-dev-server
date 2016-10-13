@@ -26,12 +26,18 @@ var app = express();
 app.use('/html5',
   function (req, res, next) {
     // DEV!
-    req.projectRoot = path.join(__dirname, '../test/fixtures/html5-project');
+    req.fsRoot = path.join(__dirname, '../test/fixtures/html5-project');
 
     next();
   },
   createDevServerHtml5(options)
 );
+
+app.use('/html5', function (err, req, res ,next) {
+  console.log('handling notfound errors outside dev-server-html5', err);
+
+  next(err);
+});
 
 // create http server and pass express app as callback
 var server = http.createServer(app);

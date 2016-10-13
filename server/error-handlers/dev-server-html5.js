@@ -1,5 +1,5 @@
 // own
-const errors = require('../../../shared/errors');
+const errors = require('../../shared/errors');
 
 module.exports = function (app, options) {
   app.use(function (err, req, res, next) {
@@ -8,7 +8,9 @@ module.exports = function (app, options) {
 
       switch (err.name) {
         case 'NotFound':
-          res.status(404).end();
+          // ATTENTION: NotFound errors should
+          // be dealt with outside dev-server-html5
+          next(err);
           break;
 
         default:

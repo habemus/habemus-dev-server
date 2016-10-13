@@ -1,5 +1,11 @@
 // native
-const path = require('path');
+const fs = require('fs');
+
+// third-party
+const Bluebird = require('bluebird');
+
+// promisify
+const readFileAsync = Bluebird.promisify(fs.readFile);
 
 // own
 const aux = require('./auxiliary');
@@ -20,12 +26,22 @@ module.exports = function (app, options) {
 
   const errors = app.errors;
 
-  /**
-   * The index.html file is a special case
-   */
   app.get('**/*.html', function (req, res, next) {
 
-    var filepath = req.path;
+    /**
+     * The path that ignores the existence of the fsRoot
+     * 
+     * @type {String}
+     */
+    var requestPath = req.path;
+
+    /**
+     * The absolutePath to the file. 
+     * MUST NEVER EVER be exposed.
+     * 
+     * @type {String}
+     */
+    var absolutePath = req.absolutePath;
 
     /**
      * Flag that defines whether injections should be done for
@@ -43,20 +59,8 @@ module.exports = function (app, options) {
      */
     var injections = app.get('htmlInjections') || [];
 
-    req.vfs.readFile(filepath, 'utf8', function (err, contents) {
-
-      if (err) {
-        if (err.code === 'ENOENT') {
-          // ATTENTION: NotFound errors should
-          // be dealt with outside dev-server-html5
-          next(new errors.NotFound(filepath));
-        } else {
-          next(err);
-        }
-        return;
-      }
-
-      try {
+    readFileAsync(absolutePath, 'utf8')
+      .then((contents) => {
         /**
          * Flag that is set to true once injections
          * have been done.
@@ -65,19 +69,12 @@ module.exports = function (app, options) {
         var _injectionsDone = false;
         var dom = aux.buildDom(contents);
 
-      } catch (err) {
-        next(err);
-        return;
-      }
-
-      try {
-
         aux.walkDom(dom, function (element) {
           if (element.type === 'tag') {
             // hf  = habemus filepath
             // hsi = habemus start index
             // hei = habemus end index
-            element.attribs['data-hf'] = filepath;
+            element.attribs['data-hf'] = requestPath;
             element.attribs['data-hsi'] = element.startIndex;
             element.attribs['data-hei'] = element.endIndex;
 
@@ -92,13 +89,6 @@ module.exports = function (app, options) {
           }
         });
 
-      } catch (err) {
-        next(err);
-        return;
-      }
-
-      try {
-
         if (!_injectionsDone) {
           // if after parsing the DOM the injections were not made
           // (that may happen if the document has no `head` element)
@@ -109,12 +99,17 @@ module.exports = function (app, options) {
         }
 
         var markedHTML = aux.stringifyDom(dom);
-      } catch (err) {
-        next(err);
-        return;
-      }
+        res.send(markedHTML);
 
-      res.send(markedHTML);
-    });
+      })
+      .catch((err) => {
+        if (err.code === 'ENOENT') {
+          next(new errors.NotFound(requestPath));
+          return;
+        } else {
+          next(err);
+          return;
+        }
+      });
   });
 }

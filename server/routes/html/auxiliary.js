@@ -1,7 +1,7 @@
 // third-party
-var htmlparser2 = require('htmlparser2');
-var DomHandler  = require('domhandler');
-var DomUtils    = require('domutils');
+const htmlparser2 = require('htmlparser2');
+const DomHandler  = require('domhandler');
+const DomUtils    = require('domutils');
 
 /**
  * Builds a dom object from an html string
