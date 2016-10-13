@@ -143,4 +143,9 @@ function devServerHTML5(options) {
   return app;
 }
 
+/**
+ * Expose errors object
+ */
+devServerHTML5.errors = errors;
+
 module.exports = devServerHTML5;
