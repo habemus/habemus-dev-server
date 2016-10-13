@@ -10,6 +10,9 @@ const readFileAsync = Bluebird.promisify(fs.readFile);
 // own
 const aux = require('./auxiliary');
 
+// constants
+const HTML_MIME_TYPE = require('mime').lookup('.html');
+
 /**
  * Auxiliary function that injects a set of html strings into a given element
  */
@@ -99,8 +102,9 @@ module.exports = function (app, options) {
         }
 
         var markedHTML = aux.stringifyDom(dom);
-        res.send(markedHTML);
 
+        res.setHeader('Content-Type', HTML_MIME_TYPE);
+        res.send(markedHTML);
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {

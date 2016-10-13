@@ -2,22 +2,20 @@
 const fs = require('fs');
 
 // third-party
-const mime = require('mime');
-const Bluebird = require('bluebird');
+const autoprefixer = require('autoprefixer');
+const postcss      = require('postcss');
+
+const Bluebird     = require('bluebird');
 
 // promisify
 const readFileAsync = Bluebird.promisify(fs.readFile);
 
+// constants
+const CSS_MIME_TYPE = require('mime').lookup('.css');
+
 module.exports = function (app, options) {
 
-  const errors = app.errors;
-
-  /**
-   * This is the last middleware to be called.
-   * For html and css files, requests should not even arrive here,
-   * but be answered before.
-   */
-  app.get('**/*', function serveProjectStaticFiles(req, res, next) {
+  app.get('**/*.css', function (req, res, next) {
 
     /**
      * The path that ignores the existence of the fsRoot
@@ -34,12 +32,13 @@ module.exports = function (app, options) {
      */
     var absolutePath = req.absolutePath;
 
-    var mimeType = mime.lookup(absolutePath);
-
     readFileAsync(absolutePath)
       .then((contents) => {
-        res.setHeader('Content-Type', mimeType);
-        res.send(contents);
+        return postcss([autoprefixer]).process(contents);
+      })
+      .then(function (result) {
+        res.setHeader('Content-Type', CSS_MIME_TYPE);
+        res.send(result.css);
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {
@@ -50,5 +49,6 @@ module.exports = function (app, options) {
           return;
         }
       });
+
   });
-}
+};

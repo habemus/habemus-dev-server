@@ -129,9 +129,13 @@ function devServerHTML5(options) {
       });
   });
 
-  // load routes
+  /**
+   * Route load order is very important as middleware
+   * actually process files before serving them.
+   */
   require('./routes/html')(app, options);
-  require('./routes/other')(app, options);
+  require('./routes/css')(app, options);
+  require('./routes/fallback')(app, options);
 
   // load error-handlers
   require('./error-handlers/dev-server-html5')(app, options);
