@@ -1,5 +1,6 @@
 // native
-const fs = require('fs');
+const fs        = require('fs');
+const NODE_PATH = require('path');
 
 // third-party
 const express         = require('express');
@@ -88,15 +89,13 @@ function devServerHTML5(options) {
         if (stats.isDirectory()) {
 
           // redirect to the 'index.html' within the directory
-          var baseUrl = req.baseUrl || '';
-          baseUrl = baseUrl.replace(TRAILING_SLASH_RE, '');
+          var baseUrl = (req.baseUrl || '').replace(TRAILING_SLASH_RE, '');
           res.redirect(baseUrl + req.path.replace(TRAILING_SLASH_RE, '') + '/index.html');
           return;
 
         } else if (stats.isFile()) {
 
           // ok to go
-          req.path = requestPath;
           req.absolutePath = absolutePath;
           next();
           return;
@@ -112,14 +111,24 @@ function devServerHTML5(options) {
 
       })
       .catch((err) => {
+
         if (err.code === 'ENOENT') {
-          // though we already know that the file does not exist,
-          // we must let further middleware to return NotFound
-          // or not, as files might be compiled on the fly
-          req.path = requestPath;
-          req.absolutePath = absolutePath;
-          next();
-          return;
+          // if the path has no extension, redirect it to an `.html` path
+          var extname = NODE_PATH.extname(requestPath);
+
+          if (extname === '' || extname === '.') {
+            var baseUrl = (req.baseUrl || '').replace(TRAILING_SLASH_RE, '');
+            res.redirect(baseUrl + req.path.replace(TRAILING_SLASH_RE, '') + '.html');
+            return;
+          } else {
+            // though we already know that the file does not exist,
+            // we must let further middleware to return NotFound
+            // or not, as files might be compiled on the fly
+            
+            req.absolutePath = absolutePath;
+            next();
+            return;
+          }
 
         } else {
           // unknown error, error immediately
