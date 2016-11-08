@@ -67,7 +67,15 @@ function devServerHTML5(options) {
       // in case the request's path is for the root,
       // forcefully redirect the request to to index.html
       // and return
-      var baseUrl = req.baseUrl || '';
+      var baseUrl;
+
+      if (typeof options.baseUrl === 'function') {
+        baseUrl = options.baseUrl(req);
+      } else if (typeof options.baseUrl === 'string') {
+        baseUrl = options.baseUrl;
+      } else {
+        baseUrl = req.baseUrl || '';
+      }
       res.redirect(baseUrl.replace(TRAILING_SLASH_RE, '') + '/index.html');
       return;
     }
