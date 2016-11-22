@@ -42,7 +42,7 @@ module.exports = function (app, options) {
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {
-          next(new errors.NotFound(requestPath));
+          next(new app.errors.NotFound(requestPath));
           return;
         } else {
           next(err);
