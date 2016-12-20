@@ -28,6 +28,7 @@ gulp.task('nodemon:with-browserify', function () {
     script: 'cli/start-with-browserify.js',
     env: {
       PORT: 5000,
+      BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://browserify-bundle-registry.io',
     },
     ext: 'js',
     ignore: [

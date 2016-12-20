@@ -17,6 +17,7 @@ const SUPPORT_DIR = '.habemus';
 fse.emptyDirSync(FS_ROOT);
 fse.copySync(
   path.join(__dirname, '../test/fixtures/browserify-project'),
+  // path.join(__dirname, '../test/fixtures/html5-project'),
   FS_ROOT
 );
 
@@ -27,8 +28,8 @@ var options = {
     '<script>console.log("hey, i am an injected script")</script>'
   ],
   
-  enableBrowserify: true,
   supportDir: SUPPORT_DIR,
+  browserifyBundleRegistryURI: process.env.BROWSERIFY_BUNDLE_REGISTRY_URI
 };
 
 // instantiate a main app

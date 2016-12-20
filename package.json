@@ -30,6 +30,7 @@
     "nopt": "^4.0.1",
     "posix": "^4.1.1",
     "postcss": "^5.2.4",
-    "root-path-builder": "git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git"
+    "root-path-builder": "git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git",
+    "virtual-npm": "git+ssh://git@bitbucket.org/habemus-tutti/virtual-npm.git"
   }
 }

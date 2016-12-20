@@ -7,17 +7,40 @@ const Bluebird = require('bluebird');
 // promisify
 const readFileAsync = Bluebird.promisify(fs.readFile);
 
+function _evalOpt(opt, req) {
+  if (typeof opt === 'function') {
+    return opt(req);
+  } else {
+    return opt;
+  }
+}
+
 module.exports = function (app, options) {
+  
   /**
-   * Global get request middleware
-   * 
+   * Whether to enable browserify or not.
+   * Defaults to a function that checks for the presence of
+   * a packageJson file and a `browserify` devDependency
+   */
+  const enableBrowserify = options.enableBrowserify || function (req) {
+    return req.config.packageJson &&
+           req.config.packageJson.devDependencies &&
+           req.config.packageJson.devDependencies.browserify;
+  };
+  
+  /**
    * Loads configuration files into the req object
    * 
    * Files:
    *   package.json
    *   bower.json
+   * 
+   * Configs:
+   *   enableBrowserify
+   *   enableLess
+   *   enableSass
    */
-  app.get('**/*', function loadConfigFiles(req, res, next) {
+  app.get('**/*', function loadConfig(req, res, next) {
     
     var config = [
       {
@@ -36,6 +59,11 @@ module.exports = function (app, options) {
       }
     ];
     
+    /**
+     * Define config object on req
+     */
+    req.config = {};
+    
     return Bluebird.all(config.map((cfg) => {
       
       return readFileAsync(
@@ -53,18 +81,23 @@ module.exports = function (app, options) {
           data = null;
         }
         
-        req[cfg.as] = data;
+        req.config[cfg.as] = data;
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {
           // silently ignore ENOENT
-          req[cfg.as] = null;
+          req.config[cfg.as] = null;
         } else {
           return Bluebird.reject(err);
         }
       })
     }))
     .then(() => {
+      /**
+       * Evaluate configurations
+       */
+      req.config.enableBrowserify = _evalOpt(enableBrowserify, req);
+      
       next();
     })
     .catch(next);

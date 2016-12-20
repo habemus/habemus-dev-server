@@ -20,6 +20,11 @@ module.exports = function (app, options) {
   const supportDir = options.supportDir;
 
   app.get('**/*.js', function (req, res, next) {
+    
+    if (!req.config.enableBrowserify) {
+      next();
+      return;
+    }
 
     /**
      * The path that ignores the existence of the fsRoot

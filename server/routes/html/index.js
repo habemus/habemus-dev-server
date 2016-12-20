@@ -65,7 +65,7 @@ module.exports = function (app, options) {
     
     var injectionsPromise = Bluebird.all(htmlInjections.map((inj) => {
       if (typeof inj === 'function') {
-        return Bluebird.resolve(inj(req, app, options));
+        return Bluebird.resolve(inj(req));
       } else {
         return Bluebird.resolve(inj);
       }
