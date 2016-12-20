@@ -23,7 +23,7 @@ function buildDom(htmlSource) {
   parser.end(htmlSource);
 
   return handler.dom;
-};
+}
 
 /**
  * Walks all the dom tree
@@ -58,7 +58,7 @@ function stringifyDom(dom, elementCb) {
   }
     
   return DomUtils.getOuterHTML(dom);
-};
+}
 
 /**
  * Helper function that builds a DOM and returns the first element

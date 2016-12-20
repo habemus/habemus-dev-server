@@ -1,0 +1,7 @@
+{
+  "name": "browserify-project",
+  "dependencies": {
+    "lodash": "*",
+    "bluebird": "*"
+  }
+}

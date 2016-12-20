@@ -26,7 +26,7 @@ var app = express();
 app.use('/html5',
   function (req, res, next) {
     // DEV!
-    req.fsRoot = path.join(__dirname, '../test/fixtures/html5-project');
+    req.fsRoot = path.join(__dirname, '../test/fixtures/browserify-project');
 
     next();
   },

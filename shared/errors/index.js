@@ -12,6 +12,26 @@ util.inherits(DevServerHTML5Error, Error);
 DevServerHTML5Error.prototype.name = 'DevServerHTML5Error';
 
 /**
+ * Happens when any required option is invalid
+ *
+ * error.option should have the option that is invalid
+ * error.kind should contain details on the error type
+ * 
+ * @param {String} option
+ * @param {String} kind
+ * @param {String} message
+ */
+function InvalidOption(option, kind, message) {
+  DevServerHTML5Error.call(this, message);
+
+  this.option = option;
+  this.kind = kind;
+}
+util.inherits(InvalidOption, DevServerHTML5Error);
+InvalidOption.prototype.name = 'InvalidOption';
+exports.InvalidOption = InvalidOption;
+
+/**
  * Occurs whenever a path results in no corresponding file
  * @param {String} path Requested path
  */

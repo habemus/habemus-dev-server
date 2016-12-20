@@ -21,7 +21,8 @@ function _injectHTMLStrings(element, injections) {
     var injectedElement = aux.createElementFromString(injection);
 
     // inject elements
-    element.children.push(injectedElement);
+    // use unshift in order to guarantee element goes before others
+    element.children.unshift(injectedElement);
   });
 }
 
@@ -60,17 +61,33 @@ module.exports = function (app, options) {
      * the head tag of the document.
      * @type {Array}
      */
-    var injections = app.get('htmlInjections') || [];
-
-    readFileAsync(absolutePath, 'utf8')
-      .then((contents) => {
+    var htmlInjections = app.get('htmlInjections') || [];
+    
+    var injectionsPromise = Bluebird.all(htmlInjections.map((inj) => {
+      if (typeof inj === 'function') {
+        return Bluebird.resolve(inj(req, app, options));
+      } else {
+        return Bluebird.resolve(inj);
+      }
+    }));
+    
+    var filePromise = readFileAsync(absolutePath, 'utf8');
+    
+    return Bluebird.all([injectionsPromise, filePromise])
+      .then((results) => {
+        // filter out injections that are not string
+        var injections = results[0].filter((inj) => {
+          return typeof inj === 'string';
+        });
+        var fileContents = results[1];
+        
         /**
          * Flag that is set to true once injections
          * have been done.
          * @type {Boolean}
          */
         var _injectionsDone = false;
-        var dom = aux.buildDom(contents);
+        var dom = aux.buildDom(fileContents);
 
         aux.walkDom(dom, function (element) {
           if (element.type === 'tag') {
