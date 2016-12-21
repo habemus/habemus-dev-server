@@ -4,12 +4,15 @@ const http = require('http');
 
 // third-party
 const express = require('express');
+const fse     = require('fs-extra');
 
 // internal dependencies
 const pkg = require('../package.json');
+const devServerHTML5 = require('../');
 
-// internal dependencies
-const createDevServerHtml5 = require('../');
+// constants
+const FS_ROOT = process.env.FS_ROOT;
+const SUPPORT_DIR = '.habemus';
 
 var options = {
   port: process.env.PORT,
@@ -17,6 +20,9 @@ var options = {
   htmlInjections: [
     '<script>console.log("hey, i am an injected script")</script>'
   ],
+  
+  supportDir: SUPPORT_DIR,
+  browserifyBundleRegistryURI: process.env.BROWSERIFY_BUNDLE_REGISTRY_URI
 };
 
 // instantiate a main app
@@ -26,11 +32,11 @@ var app = express();
 app.use('/html5',
   function (req, res, next) {
     // DEV!
-    req.fsRoot = path.join(__dirname, '../test/fixtures/browserify-project');
+    req.fsRoot = FS_ROOT;
 
     next();
   },
-  createDevServerHtml5(options)
+  devServerHTML5(options)
 );
 
 app.use('/html5', function (err, req, res ,next) {

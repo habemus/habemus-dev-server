@@ -24,6 +24,17 @@ function devServerHTML5(options) {
   // constants
   app.constants = require('../shared/constants');
 
+  // services
+  app.services = {};
+
+  // instantiate controllers
+  app.controllers = {};
+
+  // instantiate services
+  app.services = {
+    setupBrowserify: require('./services/setup-browserify')(app, options),
+  };
+
   /**
    * List of html injections
    */
@@ -32,12 +43,7 @@ function devServerHTML5(options) {
     require('./injectors/browserify-bundle').bind(null, app, options)
   );
   app.set('htmlInjections', htmlInjections);
-
-  // services
-  app.services = {};
-
-  // instantiate controllers
-  app.controllers = {};
+  
   
   require('./routes/global/parse-paths')(app, options);
   require('./routes/global/load-config')(app, options);
