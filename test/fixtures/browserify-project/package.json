@@ -2,7 +2,10 @@
   "name": "browserify-project",
   "dependencies": {
     "lodash": "*",
-    "bluebird": "*"
+    "bluebird": "*",
+    "semver": "*",
+    "jquery": "*",
+    "backbone": "*"
   },
   "devDependencies": {
     "browserify": "*"

@@ -46,7 +46,7 @@ return new Bluebird((resolve, reject) => {
     debug: true,
     standalone: options.standalone || false,
     bundleExternal: false,
-    builtins: true,
+    // builtins: true,
   });
   
   var stream = b.bundle();

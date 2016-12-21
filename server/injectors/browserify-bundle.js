@@ -18,7 +18,7 @@ module.exports = function (app, options, req) {
     datafile: supportDir + '/virtual-npm-data.json'
   });
   
-  return vNPM.ensureDependencies().then((installedPackages) => {
+  return vNPM.ensurePackageJsonInstalled().then((installedPackages) => {
     
     var dependencies = req.config.packageJson.dependencies || {};
     
@@ -26,7 +26,7 @@ module.exports = function (app, options, req) {
       return pkgName + '@' + installedPackages[pkgName].version;
     });
     
-    var bundleSrc = browserifyBundleRegistryURI + '/bundle/src.js?packages=' + bundlePackagesStr;
+    var bundleSrc = browserifyBundleRegistryURI + '/bundle/' + bundlePackagesStr + '/src.js';
     
     return '<script src="' + bundleSrc + '"></script>';
   });
