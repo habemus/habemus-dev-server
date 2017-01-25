@@ -42,6 +42,7 @@ module.exports = function (app, options) {
     });
     
     // pipe stdout to res
+    res.setHeader('Content-Type', JS_MIME_TYPE);
     browserifyProc.stdout.pipe(res);
     browserifyProc.stderr.pipe(process.stderr);
     
