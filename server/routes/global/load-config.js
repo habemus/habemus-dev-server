@@ -15,6 +15,12 @@ function _evalOpt(opt, req) {
   }
 }
 
+function _defaultEvalEnableBrowserify(req) {
+  return req.config.packageJson &&
+         req.config.packageJson.devDependencies &&
+         req.config.packageJson.devDependencies.browserify;
+}
+
 module.exports = function (app, options) {
   
   /**
@@ -22,11 +28,8 @@ module.exports = function (app, options) {
    * Defaults to a function that checks for the presence of
    * a packageJson file and a `browserify` devDependency
    */
-  const enableBrowserify = options.enableBrowserify || function (req) {
-    return req.config.packageJson &&
-           req.config.packageJson.devDependencies &&
-           req.config.packageJson.devDependencies.browserify;
-  };
+  const enableBrowserify = typeof options.enableBrowserify === 'undefined' ?
+    _defaultEvalEnableBrowserify : options.enableBrowserify;
   
   /**
    * Loads configuration files into the req object
