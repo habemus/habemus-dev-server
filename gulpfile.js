@@ -10,12 +10,12 @@ const gulpNodemon = require('gulp-nodemon');
  */
 gulp.task('nodemon', function () {
   gulpNodemon({
-    script: 'cli/start.js',
+    script: 'cli/start-with-browserify.js',
     env: {
       PORT: 5001,
       FS_ROOT: path.join(__dirname, 'tmp/browserify-project'),
       // BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://browserify-bundle-registry.io',
-      BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://104.196.24.228/public',
+      BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://api.habemus.io/browserify-bundle-registry/v0',
     },
     ext: 'js',
     ignore: [

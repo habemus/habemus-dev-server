@@ -53,22 +53,17 @@ exports.invokeBrowserifyEntriesScript = function (options) {
   });
   
   return proc;
-  
-  // var writeStream = fse.createWriteStream(
-  //   TMP_PATH + '/browserify-entry-result.js'
-  // );
-  
-  // proc.stdout.pipe(writeStream);
-  
-  // proc.stderr.pipe(process.stderr);
-  
-  // proc.on('error', reject);
-  // proc.on('exit', function (code) {
-  //   console.log('exited with code ' + code);
-    
-  //   if (code !== 0) {
-  //     reject(new Error('exited with code ' + code));
-  //   }
-  // });
-  
+};
+
+/**
+ * Auxiliary function that checks whether browserify should be
+ * enabled for the given projectConfig
+ * 
+ * @param  {Object}  projectConfig
+ * @return {Boolean}
+ */
+exports.hasBrowserifyEnabled = function (projectConfig) {
+  return projectConfig.packageJson &&
+         projectConfig.packageJson.devDependencies &&
+         projectConfig.packageJson.devDependencies.browserify;
 };

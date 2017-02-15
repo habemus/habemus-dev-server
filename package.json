@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "cheerio": "^0.22.0",
     "fs-extra": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-nodemon": "^2.0.4",
@@ -33,6 +34,7 @@
     "posix": "^4.1.1",
     "postcss": "^5.2.4",
     "root-path-builder": "git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git",
+    "vinyl": "^2.0.1",
     "virtual-npm": "git+ssh://git@bitbucket.org/habemus-tutti/virtual-npm.git"
   }
 }

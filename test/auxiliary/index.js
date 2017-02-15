@@ -2,6 +2,9 @@
 const path = require('path');
 const http = require('http');
 
+// third-party
+const Bluebird = require('bluebird');
+
 /**
  * Starts a server and keeps reference to it.
  * This reference will be used for teardown.
@@ -36,6 +39,8 @@ exports.startServer = function (port, app) {
  */
 exports.setup = function () {
   var _assets = {};
+
+  return Bluebird.resolve(_assets);
 };
 
 var TEARDOWN_CALLBACKS = [];

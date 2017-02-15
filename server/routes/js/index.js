@@ -3,9 +3,10 @@ const fs = require('fs');
 
 // third-party
 const Bluebird = require('bluebird');
+const Vinyl    = require('vinyl');
 
-// own
-const aux = require('./auxiliary');
+// promisify
+const readFileAsync = Bluebird.promisify(fs.readFile);
 
 // constants
 const JS_MIME_TYPE = require('mime').lookup('.js');
@@ -20,39 +21,17 @@ module.exports = function (app, options) {
   const supportDir = options.supportDir;
 
   app.get('**/*.js', function (req, res, next) {
-    
-    if (!req.config.enableBrowserify) {
-      next();
-      return;
-    }
 
-    /**
-     * The path that ignores the existence of the fsRoot
-     * 
-     * @type {String}
-     */
-    var requestPath = req.path;
-    
-    var browserifyProc = aux.invokeBrowserifyEntriesScript({
-      fsRoot: req.fsRoot,
-      supportDir: supportDir,
-      entries: [
-        requestPath
-      ],
+    var file = req.file;
+
+    return app.runProcessors(JS_MIME_TYPE, file, req.projectConfig, req).then((file) => {
+      
+      // pipe stdout to res
+      res.setHeader('Content-Type', JS_MIME_TYPE);
+      res.send(file.contents);
+    })
+    .catch((err) => {
+      next(err);
     });
-    
-    // pipe stdout to res
-    res.setHeader('Content-Type', JS_MIME_TYPE);
-    browserifyProc.stdout.pipe(res);
-    browserifyProc.stderr.pipe(process.stderr);
-    
-    browserifyProc.on('error', next);
-    browserifyProc.on('exit', function (code) {
-      if (code !== 0) {
-        console.warn('exited with code ' + code);
-        next(new Error('exited with code ' + code));
-      }
-    });
-    
   });
 };

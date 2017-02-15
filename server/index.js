@@ -13,7 +13,6 @@ const errors = require('../shared/errors');
 function devServerHTML5(options) {
   if (!options.apiVersion) { throw new Error('apiVersion is required'); }
   if (!options.supportDir) { throw new Error('supportDir is required'); }
-  if (!options.browserifyBundleRegistryURI) { throw new Error('browserifyBundleRegistryURI is required'); }
 
   // create express app instance
   var app = express();
@@ -21,33 +20,29 @@ function devServerHTML5(options) {
   // make the error constructors available throughout the application
   app.errors = errors;
 
+  // assign methods to the application
+  require('./app-methods')(app, options);
+
   // constants
   app.constants = require('../shared/constants');
 
-  // services
-  app.services = {};
+  // add processors passed as options
+  if (options.processors) {
+    Object.keys(options.processors).forEach((mimeType) => {
+      app.addProcessors(mimeType, options.processors[mimeType]);
+    });
+  }
 
-  // instantiate controllers
-  app.controllers = {};
+  // add html injectors passed as options
+  if (options.htmlInjectors) {
+    app.addHTMLInjectors(options.htmlInjectors);
+  }
 
-  // instantiate services
-  app.services = {
-    setupBrowserify: require('./services/setup-browserify')(app, options),
-  };
-
-  /**
-   * List of html injections
-   */
-  var htmlInjections = options.htmlInjections || [];
-  htmlInjections.push(
-    require('./injectors/browserify-bundle').bind(null, app, options)
-  );
-  app.set('htmlInjections', htmlInjections);
-  
-  
+  // load global route middleware
   require('./routes/global/parse-paths')(app, options);
-  require('./routes/global/load-config')(app, options);
-  
+  require('./routes/global/load-project-config')(app, options);
+  require('./routes/global/load-file')(app, options);
+
   /**
    * Route load order is very important as middleware
    * actually process files before serving them.

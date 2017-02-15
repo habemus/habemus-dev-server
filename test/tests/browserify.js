@@ -12,7 +12,7 @@ const fse        = require('fs-extra');
 // auxiliary
 const aux = require('../auxiliary');
 
-const devServerHTML5 = require('../../');
+const createDevServerHTML5 = require('../../');
 
 const TMP_PATH      = path.join(__dirname, '../tmp');
 const FIXTURES_PATH = path.join(__dirname, '../fixtures');
@@ -35,11 +35,16 @@ describe('browserify-related functionality', function () {
     it('should be ok', function () {
       
       this.timeout(10000);
-      
-      return devServerHTML5.setup.browserify({
-        fsRoot: TMP_PATH + '/browserify-project',
+
+      var appOptions = {
+        apiVersion: '0.0.0',
         supportDir: '.habemus',
-      })
+      };
+
+      var devServerHTML5 = createDevServerHTML5(appOptions);
+      
+      return require('../../processors/js/browserify/inject-browserify-bundle-script/setup-project-browserify')(devServerHTML5, appOptions)
+      .setup(TMP_PATH + '/browserify-project')
       .then(() => {
         
         // check that the support dir contains the browserify standalone
@@ -49,6 +54,10 @@ describe('browserify-related functionality', function () {
         
         stat.isDirectory().should.eql(true);
         
+      })
+      .catch((err) => {
+        console.warn(err);
+        throw err;
       });
     
     });
@@ -56,12 +65,18 @@ describe('browserify-related functionality', function () {
   
   describe('script:browserify-entry', function () {
     beforeEach(function () {
-      this.timeout(10000);
       
-      return devServerHTML5.setup.browserify({
-        fsRoot: TMP_PATH + '/browserify-project',
+      this.timeout(10000);
+
+      var appOptions = {
+        apiVersion: '0.0.0',
         supportDir: '.habemus',
-      }); 
+      };
+
+      var devServerHTML5 = createDevServerHTML5(appOptions);
+      
+      return require('../../processors/js/browserify/inject-browserify-bundle-script/setup-project-browserify')(devServerHTML5, appOptions)
+      .setup(TMP_PATH + '/browserify-project')
     });
     
     it('should be ok', function () {

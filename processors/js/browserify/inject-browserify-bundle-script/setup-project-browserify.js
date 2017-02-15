@@ -13,26 +13,23 @@ const cprAsync = Bluebird.promisify(cpr);
 const mkdirpAsync = Bluebird.promisify(mkdirp);
 
 // constants
-const BROWSERIFY_STANDALONE_PATH = path.join(__dirname, '../../.tmp-browserify-standalone')
+const BROWSERIFY_STANDALONE_PATH = path.join(__dirname, '../../../../.tmp-browserify-standalone')
 
 module.exports = function (app, options) {
 
   // constants
   const errors     = app.errors;
   const supportDir = options.supportDir;
-  
-  if (!supportDir) {
-    throw new errors.InvalidOption('supportDir', 'required');
-  }
 
-  var svc = {};
+  var setup = {};
 
   /**
    * Sets up browserify support files
    * @param  {Path} fsRoot
    * @return {Bluebird -> undefined}
    */
-  svc.setup = function (fsRoot) {
+  setup.setup = function (fsRoot) {
+
     if (!fsRoot) {
       throw new errors.InvalidOption('fsRoot', 'required');
     }
@@ -66,7 +63,7 @@ module.exports = function (app, options) {
    * @param  {Path} fsRoot
    * @return {Bluebird -> undefined}
    */
-  svc.ensureSetup = function (fsRoot) {
+  setup.ensureSetup = function (fsRoot) {
     if (!fsRoot) {
       throw new errors.InvalidOption('fsRoot', 'required');
     }
@@ -85,12 +82,12 @@ module.exports = function (app, options) {
     .catch((err) => {
       if (err.code === 'ENOENT') {
         console.log('setup required');
-        return svc.setup(fsRoot);
+        return setup.setup(fsRoot);
       } else {
         throw err;
       }
     })
   };
 
-  return svc;
+  return setup;
 };

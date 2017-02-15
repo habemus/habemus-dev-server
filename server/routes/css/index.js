@@ -4,7 +4,7 @@ const fs = require('fs');
 // third-party
 const autoprefixer = require('autoprefixer');
 const postcss      = require('postcss');
-
+const Vinyl        = require('vinyl');
 const Bluebird     = require('bluebird');
 
 // promisify
@@ -18,27 +18,17 @@ module.exports = function (app, options) {
   app.get('**/*.css', function (req, res, next) {
 
     /**
-     * The path that ignores the existence of the fsRoot
-     * 
-     * @type {String}
+     * An array of processors through which the contents of the file
+     * should be run.
      */
-    var requestPath = req.path;
+    var processors = app.processors[CSS_MIME_TYPE] || [];
 
-    /**
-     * The absolutePath to the file. 
-     * MUST NEVER EVER be exposed.
-     * 
-     * @type {String}
-     */
-    var absolutePath = req.absolutePath;
+    var file = req.file;
 
-    readFileAsync(absolutePath)
-      .then((contents) => {
-        return postcss([autoprefixer]).process(contents);
-      })
-      .then(function (result) {
+    return app.runProcessors(CSS_MIME_TYPE, file, req.projectConfig, req)
+      .then(function (file) {
         res.setHeader('Content-Type', CSS_MIME_TYPE);
-        res.send(result.css);
+        res.send(file.contents);
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {

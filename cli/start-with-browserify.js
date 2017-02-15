@@ -17,9 +17,17 @@ const SUPPORT_DIR = '.habemus';
 var options = {
   port: process.env.PORT,
   apiVersion: pkg.version,
-  htmlInjections: [
+  htmlInjectors: [
     '<script>console.log("hey, i am an injected script")</script>'
   ],
+  processors: {
+    'application/javascript': [
+      require('../processors/js/browserify')
+    ],
+    'text/css': [
+      require('../processors/css/autoprefixer'),
+    ],
+  },
   
   supportDir: SUPPORT_DIR,
   browserifyBundleRegistryURI: process.env.BROWSERIFY_BUNDLE_REGISTRY_URI
