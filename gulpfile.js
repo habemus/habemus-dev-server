@@ -13,7 +13,7 @@ gulp.task('nodemon', function () {
     script: 'cli/start-with-browserify.js',
     env: {
       PORT: 5001,
-      FS_ROOT: path.join(__dirname, 'tmp/browserify-project'),
+      FS_ROOT: path.join(__dirname, 'tmp/markdown-project'),
       // BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://browserify-bundle-registry.io',
       BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://api.habemus.io/browserify-bundle-registry/v0',
     },

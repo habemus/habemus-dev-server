@@ -27,23 +27,37 @@ module.exports = function (app, options) {
      */
     var absolutePath = req.absolutePath;
 
+    /**
+     * Create an empty vinyl file
+     * @type {Vinyl}
+     */
+    var file = new Vinyl({
+      cwd: req.fsRoot,
+      base: req.fsRoot,
+      path: absolutePath,
+      contents: null,
+    });
+
+    req.file = file;
+
     readFileAsync(absolutePath)
       .then((contents) => {
 
-        var file = new Vinyl({
-          cwd: req.fsRoot,
-          base: req.fsRoot,
-          path: absolutePath,
-          contents: contents,
-        });
+        // fill in file contents
+        req.file.contents = contents;
 
-        req.file = file;
+        // mark the request as NOT using virtual file
+        req.useVirtualFile = false;
 
         next();
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {
-          next(new app.errors.NotFound(requestPath));
+
+          // mark the request as using virtual file
+          req.useVirtualFile = true;
+
+          next();
           return;
         } else {
           next(err);
