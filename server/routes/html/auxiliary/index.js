@@ -125,6 +125,8 @@ function processHTML(html, options) {
     });
 
     var markedHTML = stringifyDom(dom);
+    
+    console.log(grayMatter(markedHTML).data)
 
     // parse front-matter
     resolve(grayMatter(markedHTML));

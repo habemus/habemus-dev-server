@@ -5,6 +5,8 @@ const path = require('path');
 const gulp        = require('gulp');
 const gulpNodemon = require('gulp-nodemon');
 
+require('./tasks/content-gen')(gulp);
+
 /**
  * Run server and restart it everytime server file changes
  */

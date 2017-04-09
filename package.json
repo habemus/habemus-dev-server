@@ -26,6 +26,7 @@
     "domhandler": "git+https://github.com/simonfan/domhandler.git",
     "domutils": "^1.5.1",
     "express": "^4.13.3",
+    "glob": "^7.1.1",
     "gray-matter": "^2.1.1",
     "htmlparser2": "^3.9.1",
     "marked": "^0.3.6",
