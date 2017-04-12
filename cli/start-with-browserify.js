@@ -41,13 +41,15 @@ app.use('/html5',
   function (req, res, next) {
     // DEV!
     req.fsRoot = FS_ROOT;
+    
+    req.websiteRoot = '/html5';
 
     next();
   },
   devServerHTML5(options)
 );
 
-app.use('/html5', function (err, req, res ,next) {
+app.use('/html5', function (err, req, res, next) {
   console.log('handling notfound errors outside dev-server-html5', err);
 
   next(err);

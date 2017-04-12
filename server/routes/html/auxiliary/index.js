@@ -98,8 +98,8 @@ function processHTML(html, options) {
       throw new Error('options is required');
     }
 
-    if (!options.fileProjectPath) {
-      throw new Error('options.fileProjectPath is required');
+    if (!options.hf) {
+      throw new Error('options.hf is required');
     }
 
     var dom = buildDom(html);
@@ -109,27 +109,15 @@ function processHTML(html, options) {
         // hf  = habemus filepath
         // hsi = habemus start index
         // hei = habemus end index
-        element.attribs['data-hf'] = options.fileProjectPath;
+        element.attribs['data-hf']  = options.hf;
         element.attribs['data-hsi'] = element.startIndex;
         element.attribs['data-hei'] = element.endIndex;
-
-        // // by default, add the injections in the head element
-        // if (element.name === 'head') {
-
-        //   _injectHTMLStrings(element, injections);
-
-        //   // set injections as done
-        //   _injectionsDone = true;
-        // }
       }
     });
 
     var markedHTML = stringifyDom(dom);
     
-    console.log(grayMatter(markedHTML).data)
-
-    // parse front-matter
-    resolve(grayMatter(markedHTML));
+    resolve(markedHTML);
   });
 }
 
@@ -149,33 +137,33 @@ function readHTML(filepath, options) {
  *         - contents
  *         - data
  */
-function processMarkdown(markdown, options) {
+// function processMarkdown(markdown, options) {
 
-  return new Bluebird((resolve, reject) => {
+//   return new Bluebird((resolve, reject) => {
 
-    var parsed = grayMatter(markdown);
+//     var parsed = grayMatter(markdown);
 
-    var markdownContent = parsed.content || '';
+//     var markdownContent = parsed.content || '';
 
-    marked(markdownContent, {}, (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(Object.assign({}, parsed, {
-          content: results,
-        }));
-      }
-    });
+//     marked(markdownContent, {}, (err, results) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(Object.assign({}, parsed, {
+//           content: results,
+//         }));
+//       }
+//     });
 
-  });
+//   });
 
-}
+// }
 
-function readMarkdown(filepath, options) {
-  return readFileAsync(filepath, 'utf8').then((contents) => {
-    return processMarkdown(contents, options);
-  });
-}
+// function readMarkdown(filepath, options) {
+//   return readFileAsync(filepath, 'utf8').then((contents) => {
+//     return processMarkdown(contents, options);
+//   });
+// }
 
 
 const STARTING_FW_SLASH_RE = /^\//;
@@ -192,5 +180,3 @@ exports.ensureStartingFwSlash   = ensureStartingFwSlash;
 
 exports.processHTML     = processHTML;
 exports.readHTML        = readHTML;
-exports.processMarkdown = processMarkdown;
-exports.readMarkdown    = readMarkdown;

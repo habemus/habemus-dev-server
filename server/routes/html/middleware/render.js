@@ -1,72 +1,75 @@
 // native
 const fs = require('fs');
+const path = require('path');
 
 // third-party
 const Bluebird = require('bluebird');
-const nunjucks = require('nunjucks');
+const WebIO    = require('web-io');
+const mime     = require('mime');
+const replaceExt = require('replace-ext');
+
+// promisify
+const readFileAsync = Bluebird.promisify(fs.readFile);
 
 // own
 const aux = require('../auxiliary');
+const HTML_MIME_TYPE = mime.lookup('.html');
+
+/**
+ * Constructor for the fs module used in the WebIO
+ */
+function WebIOFs(fsRoot) {
+  this.fsRoot = fsRoot;
+}
+
+WebIOFs.prototype.readFile = function (absoluteFilePath, encoding, cb) {
+  
+  var mimeType = mime.lookup(absoluteFilePath);
+  var fsRoot = this.fsRoot;
+  
+  var readPromise;
+  
+  if (mimeType === HTML_MIME_TYPE) {
+    readPromise = aux.readHTML(absoluteFilePath, {
+      // TODO: separate logic of building relative path
+      hf: '/' + require('path').relative(fsRoot, absoluteFilePath)
+    });
+  } else {
+    readPromise = readFileAsync(absoluteFilePath, encoding);
+  }
+  
+  return readPromise.then((contents) => {
+    cb(null, contents);
+  })
+  .catch(cb);
+};
+
 
 module.exports = function (app, options) {
 
-  /**
-   * Custom nunjucks loader constructor that scopes
-   * the template name to the project.
-   *
-   * Takes the express request as first argument
-   */
-  var ProjectNunjucksLoader = nunjucks.Loader.extend({
-    init: (req) => {
-      this.req = req;
-    },
-
-    async: true,
-
-    getSource: (templateName, callback) => {
-
-      var templateAbsolutePath = this.req.rootPathBuilder.prependTo(templateName);
-
-      aux.readHTML(templateAbsolutePath, { fileProjectPath: aux.ensureStartingFwSlash(templateName) })
-        .then((parsed) => {
-          callback(null, {
-            src: parsed.content,
-            path: templateName,
-            noCache: true,
-          });
-        })
-        .catch(callback);
-    }
-  });
-
   return function render(req, res, next) {
-
-    var nunjucksEnv = new nunjucks.Environment(
-      new ProjectNunjucksLoader(req),
-      {
-        autoescape: false,
-      }
-    );
-
-    return new Bluebird((resolve, reject) => {
-
-      var renderContext = req.frontMatter;
-
-      var fileString = req.file.contents.toString('utf8');
-
-      nunjucksEnv.renderString(fileString, renderContext, (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      });
-    })
-    .then((results) => {
-
-      req.file.contents = Buffer.from(results, 'utf8');
-
-      next();
+    
+    var webIO = new WebIO({
+      fsRoot: req.fsRoot,
+      fs: new WebIOFs(req.fsRoot),
+      
+      websiteRoot: req.websiteRoot || false,
     });
+    
+    return webIO.renderTemplate(req.path).then((rendered) => {
+      req.file.contents = Buffer.from(rendered, 'utf8');
+      next();
+    })
+    .catch((err) => {
+      if (err.code === 'ENOENT') {
+        return webIO.renderTemplate(replaceExt(req.path, '.md')).then((rendered) => {
+          req.file.contents = Buffer.from(rendered, 'utf8');
+          next();
+        })
+      } else {
+        next(err);
+      }
+    })
+    .catch(next);
   };
 };

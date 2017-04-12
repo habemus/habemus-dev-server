@@ -32,7 +32,7 @@ module.exports = function (app, options) {
       
       filePaths = filePaths.sort();
       
-      console.log(filePaths);
+      // console.log(filePaths);
       
       return Bluebird.all(filePaths.map((filePath) => {
         switch (mime.lookup(filePath)) {

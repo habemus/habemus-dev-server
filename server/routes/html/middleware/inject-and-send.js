@@ -27,7 +27,7 @@ module.exports = function (app, options) {
      * @type {String}
      */
     var requestPath = req.path;
-
+    
     /**
      * Flag that defines whether injections should be done for
      * the request. For now, checks whether the request was
