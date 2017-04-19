@@ -13,8 +13,10 @@ module.exports = function (app, options) {
 
   return function serveHTML(req, res, next) {
     
+    var requestPath = req.path;
+    
     return aux.readHTML(req.absolutePath, {
-      hf: req.path,
+      hf: requestPath,
     })
     .then(processed => {
       req.file = new Vinyl({

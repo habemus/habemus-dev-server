@@ -19,6 +19,8 @@ module.exports = function (app, options) {
 
   return function render(req, res, next) {
     
+    var requestPath = req.path;
+    
     var webIO = new WebIO({
       fsRoot: req.fsRoot,
       websiteRoot: req.websiteRoot || false,
@@ -53,7 +55,7 @@ module.exports = function (app, options) {
       },
     });
     
-    return webIO.renderPath(req.path).then((rendered) => {
+    return webIO.renderPath(requestPath).then((rendered) => {
       req.file = new Vinyl({
         cwd: req.fsRoot,
         base: req.fsRoot,
