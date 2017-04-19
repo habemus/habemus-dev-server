@@ -20,18 +20,21 @@ module.exports = function (app, options) {
    */
   const supportDir = options.supportDir;
 
-  app.get('**/*.js', function (req, res, next) {
-
-    var file = req.file;
-
-    return app.runProcessors(JS_MIME_TYPE, file, req.projectConfig, req).then((file) => {
-      
-      // pipe stdout to res
-      res.setHeader('Content-Type', JS_MIME_TYPE);
-      res.send(file.contents);
-    })
-    .catch((err) => {
-      next(err);
-    });
-  });
+  app.get('**/*.js',
+    require('../../middleware/load-vinyl-file')(app, options),
+    function (req, res, next) {
+  
+      var file = req.file;
+  
+      return app.runProcessors(JS_MIME_TYPE, file, req.projectConfig, req).then((file) => {
+        
+        // pipe stdout to res
+        res.setHeader('Content-Type', JS_MIME_TYPE);
+        res.send(file.contents);
+      })
+      .catch((err) => {
+        next(err);
+      });
+    }
+  );
 };

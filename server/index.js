@@ -41,7 +41,7 @@ function devServerHTML5(options) {
   // load global route middleware
   require('./routes/global/parse-paths')(app, options);
   require('./routes/global/load-project-config')(app, options);
-  require('./routes/global/load-file')(app, options);
+  // require('./routes/global/load-file')(app, options);
 
   /**
    * Route load order is very important as middleware

@@ -10,7 +10,7 @@ const readFileAsync = Bluebird.promisify(fs.readFile);
 
 module.exports = function (app, options) {
 
-  app.get('**/*', function (req, res, next) {
+  return function loadVinylFile(req, res, next) {
 
     /**
      * The path that ignores the existence of the fsRoot
@@ -46,18 +46,11 @@ module.exports = function (app, options) {
         // fill in file contents
         req.file.contents = contents;
 
-        // mark the request as NOT using virtual file
-        req.useVirtualFile = false;
-
         next();
       })
       .catch((err) => {
         if (err.code === 'ENOENT') {
-
-          // mark the request as using virtual file
-          req.useVirtualFile = true;
-
-          next();
+          next(new app.errors.NotFound(requestPath));
           return;
         } else {
           next(err);
@@ -65,5 +58,5 @@ module.exports = function (app, options) {
         }
       });
 
-  });
+  };
 };

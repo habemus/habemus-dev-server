@@ -6,8 +6,6 @@ const htmlparser2 = require('htmlparser2');
 const DomHandler  = require('domhandler');
 const DomUtils    = require('domutils');
 const Bluebird    = require('bluebird');
-const grayMatter  = require('gray-matter');
-const marked      = require('marked');
 
 // promisify
 const readFileAsync = Bluebird.promisify(fs.readFile);
@@ -127,56 +125,10 @@ function readHTML(filepath, options) {
   });
 }
 
-/**
- * Helper function that processes a Markdown string into
- * the front-matter data and the file contents already rendered into html.
- * 
- * @param  {String} markdown
- * @param  {Object} options
- * @return {Object}
- *         - contents
- *         - data
- */
-// function processMarkdown(markdown, options) {
-
-//   return new Bluebird((resolve, reject) => {
-
-//     var parsed = grayMatter(markdown);
-
-//     var markdownContent = parsed.content || '';
-
-//     marked(markdownContent, {}, (err, results) => {
-//       if (err) {
-//         reject(err);
-//       } else {
-//         resolve(Object.assign({}, parsed, {
-//           content: results,
-//         }));
-//       }
-//     });
-
-//   });
-
-// }
-
-// function readMarkdown(filepath, options) {
-//   return readFileAsync(filepath, 'utf8').then((contents) => {
-//     return processMarkdown(contents, options);
-//   });
-// }
-
-
-const STARTING_FW_SLASH_RE = /^\//;
-function ensureStartingFwSlash(str) {
-  return STARTING_FW_SLASH_RE.test(str) ? str : '/' + str;
-}
-
 exports.buildDom                = buildDom;
 exports.walkDom                 = walkDom;
 exports.stringifyDom            = stringifyDom;
 exports.createElementFromString = createElementFromString;
-
-exports.ensureStartingFwSlash   = ensureStartingFwSlash;
 
 exports.processHTML     = processHTML;
 exports.readHTML        = readHTML;
