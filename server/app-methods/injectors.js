@@ -2,27 +2,10 @@
 
 
 // third-party
-const mime = require('mime');
 const Bluebird = require('bluebird');
 const Vinyl = require('vinyl');
 
-// constants
-const SUPPORTED_MIME_TYPES = [
-  mime.lookup('.js'),
-  mime.lookup('.html'),
-  mime.lookup('.css'),
-];
-
 module.exports = function (app, options) {
-
-  // /**
-  //  * List of html injections
-  //  */
-  // var htmlInjections = options.htmlInjections || [];
-  // htmlInjections.push(
-  //   require('./injectors/browserify-bundle').bind(null, app, options)
-  // );
-  // app.set('htmlInjections', htmlInjections);
 
   /**
    * Array of html injectors
