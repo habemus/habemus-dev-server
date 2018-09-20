@@ -17,7 +17,7 @@ gulp.task('nodemon', function () {
       PORT: 5001,
       FS_ROOT: path.join(__dirname, 'tmp/markdown-project'),
       // BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://browserify-bundle-registry.io',
-      BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://api.habemus.io/browserify-bundle-registry/v0',
+      // BROWSERIFY_BUNDLE_REGISTRY_URI: 'http://api.habemus.io/browserify-bundle-registry/v0',
     },
     ext: 'js',
     ignore: [

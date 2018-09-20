@@ -1,12 +1,10 @@
 {
-  "name": "dev-server-html5",
-  "version": "1.1.1",
+  "name": "habemus-dev-server",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./cli/start.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node ./scripts/prepare-browserify-standalone.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
@@ -15,28 +13,19 @@
     "fs-extra": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-nodemon": "^2.0.4",
+    "habemus-dev-server-processor-css": "git+https://github.com/habemus/habemus-dev-server-processor-css.git",
     "should": "^9.0.2",
     "superagent": "^3.3.1"
   },
   "dependencies": {
-    "autoprefixer": "^6.5.1",
     "bluebird": "^3.4.6",
-    "browserify": "^13.1.1",
-    "cpr": "^2.0.1",
-    "domhandler": "git+https://github.com/simonfan/domhandler.git",
+    "domhandler": "^2.4.2",
     "domutils": "^1.5.1",
     "express": "^4.13.3",
-    "glob": "^7.1.1",
     "htmlparser2": "^3.9.1",
     "mime": "^1.3.4",
-    "mkdirp": "^0.5.1",
-    "nopt": "^4.0.1",
-    "pkg-up": "^1.0.0",
-    "posix": "^4.1.1",
-    "postcss": "^5.2.4",
-    "root-path-builder": "git+ssh://git@bitbucket.org/habemus-tutti/root-path-builder.git",
+    "root-path-builder": "^1.0.0",
     "vinyl": "^2.0.1",
-    "virtual-npm": "git+ssh://git@bitbucket.org/habemus-tutti/virtual-npm.git",
-    "web-io": "git+ssh://git@github.com/habemus/web-io.git"
+    "web-io": "^1.0.0"
   }
 }

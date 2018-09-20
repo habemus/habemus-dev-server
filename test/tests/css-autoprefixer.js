@@ -43,7 +43,7 @@ describe('css autoprefixer', function () {
         supportDir: '.habemus',
 
         processors: {
-          'text/css': [require('../../processors/css/autoprefixer')],
+          'text/css': [require('habemus-dev-server-processor-css')],
         }
       });
 
@@ -62,10 +62,6 @@ describe('css autoprefixer', function () {
   });
 
   it('should autoprefix flexbox (and other properties) for css files', function () {
-
-    var WEBKIT_BOX_RE = /-webkit-box/;
-    var MS_FLEXBOX_RE = /-ms-flexbox/;
-
     return new Bluebird((resolve, reject) => {
 
       superagent.get('http://localhost:4000/dev-server/style.css')
@@ -78,9 +74,5 @@ describe('css autoprefixer', function () {
           resolve(res);
         });
     })
-    .then((res) => {
-      WEBKIT_BOX_RE.test(res.text).should.eql(true);
-      MS_FLEXBOX_RE.test(res.text).should.eql(true);
-    });
   });
 });

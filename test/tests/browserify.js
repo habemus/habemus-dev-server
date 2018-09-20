@@ -17,7 +17,7 @@ const createDevServerHTML5 = require('../../');
 const TMP_PATH      = path.join(__dirname, '../tmp');
 const FIXTURES_PATH = path.join(__dirname, '../fixtures');
 
-describe('browserify-related functionality', function () {
+describe.skip('browserify-related functionality', function () {
     
   beforeEach(function () {
     
